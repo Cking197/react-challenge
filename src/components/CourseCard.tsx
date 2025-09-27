@@ -8,7 +8,7 @@ interface CourseCardProps {
 const CourseCard = ({ course }: CourseCardProps) => (
   <div className="flex flex-col items-left h-50 w-50 p-2 border-2 border-gray-400 rounded-lg">
     <div className="font-bold text-xl">
-      {`${course.term} ${course.number}`}
+      {`${course.term} CS${course.number}`}
     </div>
     <div className="text-lg text-left">
       {course.title}
