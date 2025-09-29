@@ -1,11 +1,10 @@
-
 interface BannerProps {
     title: string;
 }
 
 const Banner = ({ title }: BannerProps) => (
     <>
-        <h1>{title}</h1>
+        <h1 style={{ textAlign: "center", fontWeight: "bold", fontSize: "30px" }}>{title}</h1>
     </>
 );
 
