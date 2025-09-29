@@ -3,9 +3,11 @@ import Banner from './components/Banner';
 import CourseCardGrid from './components/CourseCardGrid';
 import TermSelector from './components/TermSelector';
 
+//types
+import type Schedule from './types/Schedule';
+
 //utils
 import { useJsonQuery } from './utilities/makeFetch';
-import type Schedule from './components/Schedule';
 
 //react
 import { useState } from 'react';

@@ -1,5 +1,5 @@
 
-import type Course from './Course';
+import type Course from '../types/Course';
 
 interface CourseCardProps {
     course: Course;
