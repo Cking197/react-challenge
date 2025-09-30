@@ -2,22 +2,30 @@
 import type Course from '../types/Course';
 
 interface CourseCardProps {
-    course: Course;
-}   
+  course: Course;
+  selected: boolean;
+  selectCourse: (course: Course) => void;
+}
 
-const CourseCard = ({ course }: CourseCardProps) => (
-  <div className="flex flex-col items-left h-50 w-50 p-2 border-2 border-gray-400 rounded-lg">
-    <div className="font-bold text-xl">
-      {`${course.term} CS${course.number}`}
+const CourseCard = ({ course,selected,selectCourse }: CourseCardProps) => (
+  <div
+    className={`flex flex-col items-left h-50 w-50 p-2 border-2 rounded-lg cursor-pointer ${selected ? 'border-blue-500 bg-blue-50' : 'border-gray-400'
+      }`}
+      onClick= {() => selectCourse(course)}
+  >
+
+      <div className="font-bold text-xl">
+        {`${course.term} CS${course.number}`}
+      </div>
+      <div className="text-lg text-left">
+        {course.title}
+      </div>
+      <hr className="w-full border-t-2 border-gray-300 my-2" />
+      <div className="flex-grow text-bottom">
+        {course.meets}
+      </div>
     </div>
-    <div className="text-lg text-left">
-      {course.title}
-    </div>
-    <hr className="w-full border-t-2 border-gray-300 my-2" />
-    <div className="flex-grow text-bottom">
-      { course.meets}
-    </div>
-  </div>
+
 );
 
 export default CourseCard;
