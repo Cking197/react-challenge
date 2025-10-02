@@ -73,7 +73,11 @@ const App = () => {
       </div>
 
       <ScheduleModal
-        courses={Object.fromEntries(selectedCourses.map(id => [id, courses[id]]))}
+        courses={Object.fromEntries(
+          selectedCourses
+            .filter(id => courses[id]?.term === selectedTerm)
+            .map(id => [id, courses[id]])
+        )}
         isOpen={showModal}
         onClose={() => setShowModal(false)}
       />
