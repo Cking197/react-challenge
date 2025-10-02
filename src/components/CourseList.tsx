@@ -9,8 +9,10 @@ const CourseList = ({ courses }: CourseListProps) => (
         {
             Object.entries(courses).map(([id, course]) => (
                 <li key={id}>
-                    {course.title} {course.term} ({course.number}): {course.meets}
-                </li>   
+                    CS{course.number} {course.title} {course.term}:<br />
+                    {course.meets}<br /> <br />
+
+                </li>
             ))
         }
     </ul>
