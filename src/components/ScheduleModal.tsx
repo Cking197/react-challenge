@@ -5,7 +5,7 @@ import { findConflictingCourseIDs } from '../utilities/catchTimeConflicts';
 import { orderClasses } from '../utilities/orderclasses';
 
 //types
-import type Course from '../types/Course';
+import type {Course} from '../types/Course';
 
 interface ScheduleModalProps {
     courses: Record<string, Course>; // or string[] if it's an array of IDs
@@ -14,48 +14,17 @@ interface ScheduleModalProps {
 }
 
 const ScheduleModal = ({ courses, isOpen, onClose }: ScheduleModalProps) => {
-    if (!isOpen) return null;
-
+    // Use the shared Modal component for backdrop/centering
     return (
-        // Fullscreen overlay so modal always sits above everything else
-        <div
-            role="dialog"
-            aria-modal="true"
-            style={{
-                position: 'fixed',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 9999, // high z-index to ensure it renders on top
-                pointerEvents: 'auto'
-            }}
-        >
-            {/* backdrop */}
-            <div
-                onClick={onClose}
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'rgba(0,0,0,0.45)',
-
-                }}
-            />
-
-            {/* Modal content container */}
+        <Modal isOpen={isOpen} onClose={onClose}>
+            {/* Content container inside the Modal */}
             <div
                 style={{
-                    position: 'relative',
-                    background: '#fff',
-                    borderRadius: 8,
-                    padding: 16,
+                    minWidth: 320,
                     maxHeight: '85vh',
                     overflow: 'auto',
-                    minWidth: 320,
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.25)'
                 }}
             >
-                {/* Keep the existing modal markup inside this content box */}
                 <div className="flex flex-col">
                     <h2 className="text-lg font-bold">Schedule:</h2>
                     {Object.keys(courses).length === 0 ? (
@@ -97,7 +66,7 @@ const ScheduleModal = ({ courses, isOpen, onClose }: ScheduleModalProps) => {
                     )}
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 
