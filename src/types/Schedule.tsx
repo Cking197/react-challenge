@@ -1,4 +1,5 @@
-import type Course from './Course';
+import type {Course} from '../types/Course';
+
 
 export default interface Schedule {
     title: string;
