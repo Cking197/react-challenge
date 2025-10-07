@@ -6,9 +6,10 @@ interface CourseCardGridProps {
     courses: Record<string, Course>;
     selectedCourses: string[];
     selectCourse: (id: string) => void;
+    disabledCourses?: string[];
 }   
 
-const CourseCardGrid = ({ courses, selectedCourses, selectCourse }: CourseCardGridProps) => (
+const CourseCardGrid = ({ courses, selectedCourses, selectCourse, disabledCourses = [] }: CourseCardGridProps) => (
   <div className="grid grid-cols-7 gap-1 px-4">
     {Object.entries(courses).map(([id, course]) => (
       <CourseCard
@@ -16,6 +17,7 @@ const CourseCardGrid = ({ courses, selectedCourses, selectCourse }: CourseCardGr
         course={course}
         selected={selectedCourses.includes(id)}
         selectCourse={() => selectCourse(id)}
+        disabled={disabledCourses.includes(id)}
       />
     ))}
   </div>        

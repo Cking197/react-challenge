@@ -9,6 +9,7 @@ import type Schedule from './types/Schedule';
 
 //utils
 import { useJsonQuery } from './utilities/makeFetch';
+import { coursesConflict } from './utilities/catchTimeConflicts';
 
 //react
 import { useState } from 'react';
@@ -35,6 +36,18 @@ const App = () => {
     : Object.fromEntries(
       Object.entries(courses).filter(([_, course]) => course.term && course.term.includes(selectedTerm))
     );
+
+  //compute blocked (greyed-out) course ids: any course that would conflict
+  //with an already-selected course (in the same term)
+  const blockedCourseIds = Object.entries(termCourses)
+    .filter(([id, course]) => {
+      if (selectedCourses.includes(id)) return false; // already selected stays enabled
+      return selectedCourses.some(selId => {
+        const sel = courses[selId];
+        return coursesConflict(sel, course);
+      });
+    })
+    .map(([id]) => id);
 
   //course selection 
   const selectCourse = (id: string) => {
@@ -86,6 +99,7 @@ const App = () => {
         courses={termCourses}
         selectedCourses={selectedCourses}
         selectCourse={selectCourse}
+        disabledCourses={blockedCourseIds}
       />
     </>
   )

@@ -13,49 +13,92 @@ interface ScheduleModalProps {
     onClose: () => void
 }
 
-const ScheduleModal = ({ courses, isOpen, onClose }: ScheduleModalProps) => (
-    <Modal isOpen={isOpen} onClose={onClose}>
-        <div className="flex flex-col">
-            <h2 className="text-lg font-bold">Schedule:</h2>
-            {Object.keys(courses).length === 0 ? (
-                <div className="text-center text-gray-500 my-4">
-                    Click a course to add it to your schedule.
+const ScheduleModal = ({ courses, isOpen, onClose }: ScheduleModalProps) => {
+    if (!isOpen) return null;
+
+    return (
+        // Fullscreen overlay so modal always sits above everything else
+        <div
+            role="dialog"
+            aria-modal="true"
+            style={{
+                position: 'fixed',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 9999, // high z-index to ensure it renders on top
+                pointerEvents: 'auto'
+            }}
+        >
+            {/* backdrop */}
+            <div
+                onClick={onClose}
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.45)',
+
+                }}
+            />
+
+            {/* Modal content container */}
+            <div
+                style={{
+                    position: 'relative',
+                    background: '#fff',
+                    borderRadius: 8,
+                    padding: 16,
+                    maxHeight: '85vh',
+                    overflow: 'auto',
+                    minWidth: 320,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.25)'
+                }}
+            >
+                {/* Keep the existing modal markup inside this content box */}
+                <div className="flex flex-col">
+                    <h2 className="text-lg font-bold">Schedule:</h2>
+                    {Object.keys(courses).length === 0 ? (
+                        <div className="text-center text-gray-500 my-4">
+                            Click a course to add it to your schedule.
+                        </div>
+                    ) : (
+                        (() => {
+                            const orderedCourses = orderClasses(courses);
+                            const conflictIDs = findConflictingCourseIDs(orderedCourses);
+                            return <>
+                                {conflictIDs.length > 0 && (
+                                    <div className="text-center text-red-600 font-bold mb-2">
+                                        Warning: Your schedule has a time conflict!
+                                    </div>
+                                )}
+                                <div className="flex flex-col gap-2 my-2">
+                                    {(() => {
+                                        const blocks = [];
+                                        let lastTerm: string | undefined;
+                                        for (const [id, course] of Object.entries(orderedCourses)) {
+                                            if (lastTerm && course.term !== lastTerm) {
+                                                blocks.push(<hr key={`hr-${id}`} className="my-2 border-t-2 border-gray-300" />);
+                                            }
+                                            blocks.push(
+                                                <ScheduleBlock
+                                                    key={id}
+                                                    course={course}
+                                                    borderColor={conflictIDs.includes(id) ? "red" : "black"}
+                                                />
+                                            );
+                                            lastTerm = course.term;
+                                        }
+                                        return blocks;
+                                    })()}
+                                </div>
+                            </>;
+                        })()
+                    )}
                 </div>
-            ) : (
-                                (() => {
-                                    const orderedCourses = orderClasses(courses);
-                                    const conflictIDs = findConflictingCourseIDs(orderedCourses);
-                                    return <>
-                                        {conflictIDs.length > 0 && (
-                                            <div className="text-center text-red-600 font-bold mb-2">
-                                                Warning: Your schedule has a time conflict!
-                                            </div>
-                                        )}
-                                                            <div className="flex flex-col gap-2 my-2">
-                                                                {(() => {
-                                                                    const blocks = [];
-                                                                    let lastTerm: string | undefined;
-                                                                    for (const [id, course] of Object.entries(orderedCourses)) {
-                                                                        if (lastTerm && course.term !== lastTerm) {
-                                                                            blocks.push(<hr key={`hr-${id}`} className="my-2 border-t-2 border-gray-300" />);
-                                                                        }
-                                                                        blocks.push(
-                                                                            <ScheduleBlock
-                                                                                key={id}
-                                                                                course={course}
-                                                                                borderColor={conflictIDs.includes(id) ? "red" : "black"}
-                                                                            />
-                                                                        );
-                                                                        lastTerm = course.term;
-                                                                    }
-                                                                    return blocks;
-                                                                })()}
-                                                            </div>
-                                    </>;
-                                })()
-            )}
+            </div>
         </div>
-    </Modal>
-);
+    );
+};
 
 export default ScheduleModal;

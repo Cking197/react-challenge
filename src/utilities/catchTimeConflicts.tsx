@@ -26,29 +26,43 @@ export function parseMeetingTime(meets: string) {
     };
 }
 
+//returns false if either course is missing meeting info or if terms differ
 
-// Returns array of course IDs that have time conflicts with any other selected course
+export function coursesConflict(a?: Course, b?: Course): boolean {
+    if (!a || !b) return false;
+    if (!a.meets || !b.meets) return false;
+    if (a.term !== b.term) return false;
+
+    try {
+        const ta = parseMeetingTime(a.meets);
+        const tb = parseMeetingTime(b.meets);
+
+        // days overlap?
+        const daysOverlap = [...ta.days].some(d => tb.days.includes(d));
+        if (!daysOverlap) return false;
+
+        // time overlap?
+        return !(ta.end <= tb.start || ta.start >= tb.end);
+    } catch {
+        // parsing error => treat as non-conflicting
+        return false;
+    }
+}
+
+
+// Optional: keep a convenience function that uses the pairwise check
+// to find all conflicting IDs among a set of selected courses.
 export function findConflictingCourseIDs(selectedCourses: Record<string, Course>): string[] {
     const ids = Object.keys(selectedCourses);
     const conflicts = new Set<string>();
 
     for (let i = 0; i < ids.length; i++) {
         const idA = ids[i];
-        const courseA = selectedCourses[idA];
-        const timeA = parseMeetingTime(courseA.meets);
         for (let j = i + 1; j < ids.length; j++) {
             const idB = ids[j];
-            const courseB = selectedCourses[idB];
-            // Only check conflicts if courses are in the same term
-            if (courseA.term !== courseB.term) continue;
-            const timeB = parseMeetingTime(courseB.meets);
-            // Check if days overlap
-            if ([...timeA.days].some(day => timeB.days.includes(day))) {
-                // Check if times overlap
-                if (!(timeA.end <= timeB.start || timeA.start >= timeB.end)) {
-                    conflicts.add(idA);
-                    conflicts.add(idB);
-                }
+            if (coursesConflict(selectedCourses[idA], selectedCourses[idB])) {
+                conflicts.add(idA);
+                conflicts.add(idB);
             }
         }
     }
