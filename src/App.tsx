@@ -8,15 +8,16 @@ import ScheduleModal from './components/ScheduleModal';
 import type Schedule from './types/Schedule';
 
 //utils
-import { useJsonQuery } from './utilities/makeFetch';
+//import { useJsonQuery } from './utilities/makeFetch';
 import { coursesConflict } from './utilities/catchTimeConflicts';
+import { useDataQuery } from './utilities/firebase';
 
 //react
 import { useState } from 'react';
 
 const App = () => {
   //states
-  const [json, isLoading, error] = useJsonQuery('https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php');
+  const [json, isLoading, error] = useDataQuery('/');
   const [selectedTerm, setSelectedTerm] = useState<string>('Fall'); //default term will be fall
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
