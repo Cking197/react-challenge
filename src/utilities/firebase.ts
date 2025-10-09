@@ -7,17 +7,16 @@ import { useEffect, useState } from 'react';
 import { getDatabase, onValue, ref } from 'firebase/database';
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBVfoFciYyLeiqG_82jIHhbBbwlqvOUqpM",
-  authDomain: "react-challenge-e8ba3.firebaseapp.com",
-  databaseURL: "https://react-challenge-e8ba3-default-rtdb.firebaseio.com",
-  projectId: "react-challenge-e8ba3",
-  storageBucket: "react-challenge-e8ba3.firebasestorage.app",
-  messagingSenderId: "320571133707",
-  appId: "1:320571133707:web:3228fcd9e56cfd74ecdc0e",
-  measurementId: "G-55NSQ6LFQT"
-};
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  };
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
