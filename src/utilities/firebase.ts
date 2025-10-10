@@ -4,9 +4,8 @@ import { initializeApp } from "firebase/app";
 //import { useCallback, useEffect, useState } from 'react';
 import { useEffect, useState } from 'react';
 // import { getDatabase, onValue, push, ref, update } from 'firebase/database';
-import { getDatabase, onValue, ref,update } from 'firebase/database';
+import { getDatabase, onValue, ref, update, remove } from 'firebase/database';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -50,7 +49,13 @@ export const useDataQuery = (path: string): [unknown, boolean, Error | undefined
 // uid is the user ID
 // postData is an object with the post's content, timestamp, title, etc.
 // Get an ID for the post
-export const updateCourse=async(courseID:string, postData:object): Promise<void> => {
-  const toUpdate = ref(database, 'courses/' + courseID);
+export const updateCourse = async (oldCourseID: string | undefined, newCourseID: string, postData: object): Promise<void> => {
+  // If the course ID changed (rename), remove the old entry first
+  if (oldCourseID && oldCourseID !== newCourseID) {
+    const oldRef = ref(database, 'courses/' + oldCourseID);
+    await remove(oldRef);
+  }
+
+  const toUpdate = ref(database, 'courses/' + newCourseID);
   await update(toUpdate, postData);
 };

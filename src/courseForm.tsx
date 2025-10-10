@@ -18,13 +18,15 @@ const CourseForm = () => {
     mode: 'onChange',
     resolver: courseResolver,
   });
+  // store the original course ID from the incoming search params so updates
+  // can target the original record even if the user changes the term/number
+  const oldCourseID = rawTerm && number ? rawTerm.charAt(0) + number : undefined;
   
   const onSubmit: SubmitHandler<Course> = async(data) => {
     try {
       //Course ID is first letter of term + number
-      const courseID=data.term?.charAt(0) + data.number;
-
-      await updateCourse(courseID, data);
+      const newCourseID = data.term?.charAt(0) + data.number;
+      await updateCourse(oldCourseID,newCourseID, data);
       navigate({ to: '/' });
     } catch (error) {
       if (error instanceof Error) {
