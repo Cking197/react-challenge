@@ -3,6 +3,7 @@ import type { Course } from './types/Course';
 import CourseField from './components/CourseField';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { courseResolver } from './types/Course';
+import { updateCourse } from './utilities/firebase';
 
 const CourseForm = () => {
   // Get defaults from URL search params
@@ -15,15 +16,23 @@ const CourseForm = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Course>({
     defaultValues: { number, term, title, meets },
     mode: 'onChange',
-    reValidateMode: 'onChange',
     resolver: courseResolver,
   });
   
   const onSubmit: SubmitHandler<Course> = async(data) => {
-    data
-    alert(`Submitting ${JSON.stringify(data)}`)
-    // Simulate a 2-second API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      //Course ID is first letter of term + number
+      const courseID=data.term?.charAt(0) + data.number;
+
+      await updateCourse(courseID, data);
+      navigate({ to: '/' });
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(`Failed to save course: ${error.message}`);
+      } else {
+        alert('Failed to save course due to an unknown error');
+      }
+    }
   };
 
   const onError: SubmitErrorHandler<Course> = () => {

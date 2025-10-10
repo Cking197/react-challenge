@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 //import { useCallback, useEffect, useState } from 'react';
 import { useEffect, useState } from 'react';
 // import { getDatabase, onValue, push, ref, update } from 'firebase/database';
-import { getDatabase, onValue, ref } from 'firebase/database';
+import { getDatabase, onValue, ref,update } from 'firebase/database';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,6 +22,8 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
 //const analytics = getAnalytics(firebase);
+
+
 
 export const useDataQuery = (path: string): [unknown, boolean, Error | undefined] => {
   const [data, setData] = useState();
@@ -43,4 +45,12 @@ export const useDataQuery = (path: string): [unknown, boolean, Error | undefined
   }, [ path ]);
 
   return [ data, loading, error ];
+};
+
+// uid is the user ID
+// postData is an object with the post's content, timestamp, title, etc.
+// Get an ID for the post
+export const updateCourse=async(courseID:string, postData:object): Promise<void> => {
+  const toUpdate = ref(database, 'courses/' + courseID);
+  await update(toUpdate, postData);
 };
