@@ -5,24 +5,26 @@ import { initializeApp } from "firebase/app";
 import { useEffect, useState } from 'react';
 // import { getDatabase, onValue, push, ref, update } from 'firebase/database';
 import { getDatabase, onValue, ref, update, remove } from 'firebase/database';
+import { flushSync } from 'react-dom'
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type NextOrObserver, type User } from 'firebase/auth';
+
 
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-  };
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+};
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
 const database = getDatabase(firebase);
+const auth = getAuth(firebase);
 //const analytics = getAnalytics(firebase);
-
-
 
 export const useDataQuery = (path: string): [unknown, boolean, Error | undefined] => {
   const [data, setData] = useState();
@@ -34,16 +36,16 @@ export const useDataQuery = (path: string): [unknown, boolean, Error | undefined
     setLoading(true);
     setError(undefined);
     return onValue(ref(database, path), (snapshot) => {
-        setData( snapshot.val() );
-        setLoading(false);
-      }, (error) => {
-        setError(error);
-        setLoading(false);
-      }
+      setData(snapshot.val());
+      setLoading(false);
+    }, (error) => {
+      setError(error);
+      setLoading(false);
+    }
     );
-  }, [ path ]);
+  }, [path]);
 
-  return [ data, loading, error ];
+  return [data, loading, error];
 };
 
 // uid is the user ID
@@ -58,4 +60,37 @@ export const updateCourse = async (oldCourseID: string | undefined, newCourseID:
 
   const toUpdate = ref(database, 'courses/' + newCourseID);
   await update(toUpdate, postData);
+};
+
+export const signInWithGoogle = () => {
+  signInWithPopup(auth, new GoogleAuthProvider());
+};
+
+const firebaseSignOut = () => signOut(auth);
+
+export { firebaseSignOut as signOut };
+
+export interface AuthState {
+  user: User | null,
+  isAuthenticated: boolean,
+  isInitialLoading: boolean
+}
+
+export const addAuthStateListener = (fn: NextOrObserver<User>) => (
+  onAuthStateChanged(auth, fn)
+);
+
+export const useAuthState = (): AuthState => {
+  const [user, setUser] = useState(auth.currentUser)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const isAuthenticated = !!user;
+
+  useEffect(() => addAuthStateListener((user: User | null) => {
+    flushSync(() => {
+      setUser(user);
+      setIsInitialLoading(false);
+    })
+  }), [])
+
+  return { user, isAuthenticated, isInitialLoading };
 };

@@ -1,5 +1,6 @@
 import type {Course} from '../types/Course';
 import { Link } from '@tanstack/react-router';
+import { useAuthState } from '../utilities/firebase';
 
 interface CourseCardProps {
   course: Course;
@@ -36,15 +37,21 @@ const CourseCard = ({ course, selected, selectCourse, disabled = false }: Course
       </div>
     </div>
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-      <Link
-        to="/courseForm"
-        search={{ number: course.number, term: course.term, title: course.title, meets: course.meets }}
-        className="m-2 p-2 border rounded bg-blue-500 text-white"
-        style={{ width: '100%', textAlign: 'center' }}
-        onClick={(e) => { /* allow edit even when disabled; stop propagation so outer onClick not triggered */ e.stopPropagation(); }}
-      >
-        Edit Course
-      </Link>
+      {(() => {
+        const { user } = useAuthState();
+        if (!user) return null;
+        return (
+          <Link
+            to="/courseForm"
+            search={{ number: course.number, term: course.term, title: course.title, meets: course.meets }}
+            className="m-2 p-2 border rounded bg-blue-500 text-white"
+            style={{ width: '100%', textAlign: 'center' }}
+            onClick={(e) => { /* allow edit even when disabled; stop propagation so outer onClick not triggered */ e.stopPropagation(); }}
+          >
+            Edit Course
+          </Link>
+        );
+      })()}
     </div>
   </div>
 );
