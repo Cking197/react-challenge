@@ -1,6 +1,6 @@
 import type {Course} from '../types/Course';
 import { Link } from '@tanstack/react-router';
-import { useAuthState } from '../utilities/firebase';
+import useProfile from '../utilities/profile';
 
 interface CourseCardProps {
   course: Course;
@@ -38,8 +38,12 @@ const CourseCard = ({ course, selected, selectCourse, disabled = false }: Course
     </div>
     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
       {(() => {
-        const { user } = useAuthState();
-        if (!user) return null;
+        const profile = useProfile();
+        let admin = false;
+        if (profile && typeof profile[0] === 'object' && profile[0] !== null && 'isAdmin' in profile[0]) {
+          admin = Boolean((profile[0] as { isAdmin?: unknown }).isAdmin);
+        }
+        if (!admin) return null;
         return (
           <Link
             to="/courseForm"

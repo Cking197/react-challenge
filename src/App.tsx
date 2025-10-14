@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 const App = () => {
   //states
-  const [json, isLoading, error] = useDataQuery('/');
+  const [json, isLoading, error] = useDataQuery('/Schedule');
   const [selectedTerm, setSelectedTerm] = useState<string>('Fall'); //default term will be fall
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
