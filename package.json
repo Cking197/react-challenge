@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "test": "vitest --ui",
     "coverage": "vitest run --coverage",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "em:start": "firebase emulators:start --import=./saved-data --export-on-exit",
+    "em:exec": "firebase emulators:exec --import=./saved-data 'npm start'",
+    "em:execui": "firebase emulators:exec --ui --import=./saved-data 'npm start'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
