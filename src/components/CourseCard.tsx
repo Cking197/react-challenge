@@ -11,7 +11,9 @@ interface CourseCardProps {
 
 const CourseCard = ({ course, selected, selectCourse, disabled = false }: CourseCardProps) => (
   <div
+    data-cy="course"
     className={`flex flex-col justify-between h-full w-full p-4 border-2 rounded-lg ${
+      
       selected ? 'border-blue-500 bg-blue-50' : 'border-gray-400'
     }`}
     onClick={() => { if (!disabled) selectCourse(course); }}
