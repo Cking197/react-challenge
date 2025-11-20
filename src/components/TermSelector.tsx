@@ -15,7 +15,7 @@ const RadioControl = ({ name, options, selected, setSelected }: TermSelectorProp
                  checked={option === selected}
                  onChange={() => setSelected(option)}
           />
-          <label className="ml-1 mr-1" htmlFor={option}>
+          <label className="ml-1 mr-1" htmlFor={option} data-cy={option}>
             {option}
           </label>
         </div>
